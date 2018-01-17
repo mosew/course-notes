@@ -1,0 +1,1668 @@
+ALGORITHMS NOTES
+
+Exam 1: 30%. Feb 17.
+Exam 2: 30%. March 31.
+Exam 3: 40%. April 28.
+
+Learn: data structures, sorting, graph search
+
+COURSE
+short review of prerequisites
+Major algorithmic techniques: greedy, divide & conquer,...
+EXAM 1
+
+...dynamic programming
+Network flow
+EXAM 2
+
+Complexity
+Approximation
+Linear programming
+EXAM 3 (cumulative)
+
+
+
+How to write an algorithm:
+	concise problem statement
+	propose solution
+	prove solution
+	complexity analysis
+	
+	
+	
+Stable matching:
+	A matching is a set of ordered pairs in M x W.
+	A perfect matching S' is a matching with the property that each member of M and each member of W appear in exactly one pair in S'
+	Preferences:
+		For each man m_i, an ORDERED list P_{m_i} of women indicating pref. rank [w_{i_1},...,w_{i_|W|}].
+		Same for women.
+	An instability in a matching S is a pair (m,w') in (M x W) \ S such that
+		(m,w) and (m',w') in S, and 
+		m prefers w' to w, and
+		w' prefers m to m'.
+
+	Problem statement:
+		Input: Preference lists for a set of n men and n women.
+		Output: Set of n marriages with no instabilities.
+		
+	Algorithm:
+		Choose a man m at random.
+		He makes a proposition to the woman at the top of his list.
+		They get engaged.
+		
+		Then the next randomly chosen man m' proposes to his most-wanted.
+		If m' proposes to an already-taken woman w, and she prefers m' to her betrothed,
+			she switches to m' and
+			m becomes a free man again.
+		If m' proposes to w and she does not prefer him to m, then
+			m' proposes to the next woman on his list.
+		If m' does not propose to an already engaged woman, then
+			they get engaged.
+		continue to the next man.
+			
+	Proof:
+		Woman can, once engaged, only improve her prospects.
+		Man can get engaged, then get dumped, so his prospects can only worsen from beginning.
+		Obviously a perfect matching.
+		Stable:
+			Assume not. Then there is an instability among (m,w) and (m',w').
+			Suppose the instability is (m,w').
+				Did m propose to w' at some point during the algorithm?
+				If no,
+					then m preferred w. Hence, no instability.
+				If yes,
+					then w' preferred some other man to m at some point (not neccessarily m'), say m''.
+					Since w' could only ever improve her prospects, she preferred m' to m in the end.
+					
+	Complexity:
+	
+	
+
+1/18/2017
+
+Stable matching
+O(N^2) worst case
+
+Top-level
+	1. Identify a free man
+	2. Identify the highest ranked woman w to whom m has not yet proposed
+	3. Decide if w is engaged, and if so, to whom
+	4. Decide which man (m or m') is preferred by w
+	
+	
+Deeper:
+	1. Identify a free man
+		what type of data structure?
+		array, list, stack, queue, linked list...many.
+		each will be O(1)
+		
+	2. Identify the highest ranked woman to whom m has not yet proposed
+		Keep array called next[] where next[m] points to the position of the next woman that m will propose to
+	
+		Preference lists stored as two 2D arrays, where manpref[m,i] is ith position for man m
+		Next woman that m will propose to is at manpref[m,next[m]]. same with womanpref.
+		
+		takes O(1) time
+		
+	3. Decide if w is engaged, and if so, to whom
+		Keep an array called current[] where current[w] is NULL if w is not engaged and m if she is engaged to m_i
+		takes O(1)
+	
+	4. Decide which man (m or m') is preferred by w
+		takes O(n) time (unless you use a hashtable for pref?)
+		could also create array ranking[w,m] giving rank of man m for woman w
+			takes O(n^2) to construct array
+		then takes constant time to decide which man is preferred by w
+	Total cost: O(n^2) [construct ranking array] + O(n^2) [worst case #iterations] = O(n^2)
+	
+QUIZ
+	Which sorting algorithms have worst-case runtimes asymptotically bounded below by n^2?
+		bubble sort:
+			repeatedly pass thru list making swaps "bubble" to the top.
+			this one. worst case is O(n^2) swaps
+				backwards list
+		heap sort:
+			need a heap to do this, takes O(nlogn) to construct
+			worst case is O(nlogn). Theta(nlogn) actually.
+		insertion sort:
+			stack of unsorted
+			sorted.push(unsorted.pop())
+			swap sorted(end) with sorted(end-1) until in place.
+			worst case is O(n^2)
+				already backwards
+		merge sort:
+			split into singleton lists.
+			repeatedly compare each list with adjacent list and merge them.
+			takes O(nlogn)
+		quick sort:
+			choose pivot from array
+			partition: reorder array so all values less than pivot come before it
+			recursively apply above steps to
+				elements coming before pivot
+				elements coming after pivot
+			O(n^2) worst case
+		selection sort:
+			this is the slowest one.
+			usually takes O(n^2).
+			search for max many times.
+			
+	1. selection
+	2. heap, merge
+	3. 3,(2n^2),(logn)^4, loglogn, 4nlogn, n^2+4nlogn
+	4. 3, (logn)^4, loglogn, 4nlogn
+	5. cycle: connected
+		tree: is a forest, connected, an acyclic graph, a small tree is bipartite
+		forest: connected
+		connected graph: not any ofthese
+		acyclic graph: connected graph
+		bipartite graphs: not any
+		path: is connected, acyclic
+		
+	6. BFS:
+	Breadth-First-Search(Graph, root, goal):
+    
+    create empty set S
+    create empty queue Q      
+
+    root.parent = NIL
+    Q.enqueue(root)                      
+
+    while Q is not empty:
+        current = Q.dequeue()
+        if current is the goal
+            return current
+        for each node n that is adjacent to current:
+            if n is not in S:
+                add n to S
+                n.parent = current
+                Q.enqueue(n)
+				
+	path stored as linked list
+	
+	DFS:
+	DFS(G,v,goal):
+	
+	if v==goal:
+		return
+	else:
+		label v as discovered
+		for all edges from v to w in G.adjacentEdges(v):
+			if vertex w is not labeled as discovered then:
+				DFS(G,w)
+			
+			
+	a) m+n
+	b) m+n
+	c) m+n
+	d) m+n
+	
+	7. a,c,g,i,k,l
+	
+	
+	
+	
+REVIEW OF STUFF
+	=====
+	Asymptotic notation:
+		O(g(n)) = {f(n)} means exists constants s.t.
+			0<=f(n)<=c*g(n) for all n > n0
+		
+		Omega(g(n)) = {f(n)} means exists constants s.t.
+			0<=c*g(n)<={f(n)}
+			
+		Theta(g(n)) 
+			0<= c1*g(n)<=f(n)<=c2*g(n)
+			
+		Omega < Theta < O
+		
+						worst case (O)	|	best case (Omega)
+	linear search		O(n)				Om(1)
+	binary search		O(logn)				Om(1)
+	insertion sort		O(n^2)				Om(n)
+	merge sort			O(nlogn)			Om(nlogn)
+	etc...
+
+	=====
+	How to determine if a graph is bipartite?
+		start at root A: put in X
+		all neighbors of A are in Y
+		all neighbors of those are in X, etc.
+		if we hit an already-assigned node, then return FALSE
+		then go through all edges and check the ends.
+		
+		if a graph is bipartite, it cannot contain an odd cycle
+		
+		suppose two guys at level j, with a common ancestor at level i, are joined by an edge.
+		then it's a cycle and the length of the cycle is 2(j-i)+1.
+		thus no edge between nodes on same level.
+		
+	=====
+	A directed graph is strongly connected if there is a path between each pair of nodes.
+	How to tell if a given directed graph is strongly connected?
+		O(mn+n^2) for brute force solution
+		
+		if we begin a search from any starting point a and fail to find any node,
+			then that node is not reachable from a
+			return FALSE
+		solution:
+			O(m+n) 1. do search for some starting node in G, to see if we fail to find any node.
+			O(m)   2. take transpose G' of G (flip edges).
+						if a->b exists in G', then b->a exists in G. thus if we
+			O(m+n) 3. do the search again from a and fail to find a node,
+						then some node is not reachable through a, so not strongly connected.
+					otherwise, it is strongly connected.
+	
+GREEDY METHODS
+
+	Interval scheduling problem
+		Input: set of requests with start time s[i] and end time f[i].
+		Output: largest compatible subset of input.
+		
+	Greedy solutions are sometimes bad...
+		first try: earliest requests first
+			bad situation: one long request
+		second try: shortest request first
+			bad situation: short request that overlaps with other requests
+		third try: smallest number of overlaps first
+			bad situation:
+					-			-
+					-			-
+					-			-
+					-			-
+						----	
+				---------  ----------
+		fourth try: earliest finish time. this works!
+			while R is nonempty
+				choose request i from R with earliest finish time
+				add request i to A
+				delete all from R that are not compatible with i
+			return A
+			
+	Correctness: 
+		Show A is compatible.
+			Easy; once something is added to A, all incompatible requests are eliminated.
+		Show A is optimal.
+			Say there is an optimal solution O. Will prove |A|=|O|.
+			Requests in A: i_1,...,i_k
+			Requests in O: j_1,...,j_m
+			
+			Induction: k. For all r<=k, f(i_r)<=f(j_r).
+				k=1: Obvious from "earliest finish time."
+				Suppose true for k-1. Then for r<k, f(i_r)<=f(j_r). For r=k,
+					interval j_r is compatible with i_{r-1}.
+					We picked i_r though, so f(i_r)<=f(j_r).
+				Consider the final request i_k. Suppose there is a j_k+1 in O.
+					Then since j_k+1 is compatible with j_k, it's compatible with i_k.
+					Thus it is in A, contradicting finality of i_k.
+					
+	Complexity:
+		gotta sort requests to find earliest finish time! O(nlogn).
+		label with f(i)<=f(j).
+		Then iterate through the intervals.
+		in A, store the last f(i) queued. skip those in R for which s(j)<=f(i).
+		
+		
+		
+1/25/2017
+Minimal spanning tree (MST)
+	Kruskal's algorithm:
+		Begin with all vertices as forest
+		One by one, draw in edges with smallest weights unless they make a cycle
+	
+		Proof of correctness:
+			Def: A cut in a graph is a partition of its vertices into two disjoint sets
+			Lemma: Given any cut in a graph, the crossing edge of smallest weight will always be in the MST
+			Proof: Suppose given a cut, e is the smallest crossing edge, not in the MST.
+				Then there is some other crossing edge f in the MST, since in the end we must have a tree.
+				But then the MST is not optimal, since MST - f + e has smaller weight.
+				recursively cut the graph until you get a tree.
+				
+		Runtime:
+			Sorting edges is O(eloge)
+			Cycle detection is O(v) for each edge
+			total is O(ve + eloge)
+		
+	Prim's algorithm: 
+		Begin with single arbitrary vertex as graph component C
+		Expand C by adding vertex having minimum weight edge of the graph having exactly one endpoint in C
+			Implemented by, say, an array. O(v) to find minimum in this case, could b improved to O(1).
+		Update all distances from C to adjacent vertices.
+			Each update is O(1).
+			For each vertex added, examine all adjacent vertices.
+			Update array E times in worst case
+			Total cost O(V^2 + E)
+		Continue until all vertices are in C.
+		Binary heap reduces runtime to O(v(logv+e)) -- same as Dijkstra
+		In next lecture, improved to O(vlogv+e) using advanced data structure(Fibonacci heap)
+		
+Binary heaps:
+	A heap is a complete binary tree which satisfies the heap property
+	Heap property: each element is greater than or equal to its parent
+	Complete: each level is filled except bottom, filled left to right
+	As array:
+		Skip index 0
+		left child of index k is at 2k, right child is at 2k+1, parent at k/2
+		Insert: O(nlogn)
+			Put at last index
+		siftUp(index):
+			if A[index]<A[parent]:
+				swap A[index] with A[parent]
+				siftUp(index/2)
+		siftDown(index):
+			if A[index]>A[2*index]:
+				swap A[index] with A[2*index]
+				siftDown(2*index)
+			if A[index]>A[2*index+1]:
+				swap A[index] with A[2*index+1]
+				siftDown(2*index+1)
+				
+	deleteMin:
+		swap top with last element, delete, then SiftDown
+		
+	decreaseKey: #change entry
+		change it, sift up
+		
+	building a heap:
+		by insertion: O(nlogn)
+		heapify: O(n)
+			put elements in array in any order
+			starting from position n/2 (second to last layer) down to 1,
+			siftDown
+			
+			complexity of heapify:
+				sifting down 2^{h-1} elements
+				count max number of swaps at each level:
+					height	#nodes	max#swaps
+					 0		 1 		 h
+					 1 		 2		 h-1
+					 2		 4		 h-2
+					 ...
+					 h-1	2^{h-1}	 1
+				---------------------------------
+	total swaps		sum_{k=1}^h k*2^{h-k} = 2^h sum_{k=1}^h k/2^k = x
+					x - x/2 = sum_{k=1}^h 1/2^k = 2
+					constant
+	
+	merge heaps:
+		concatenate arrays and heapify
+	
+	priority queue:
+		abstract data structure implemented as heap.
+		two functions:
+			insert new item according to its priority
+			remove item with highest priority
+	
+	Heap methods complexity:
+		findMin: constant
+		deleteMin: log
+		insert: log
+		decreaseKey: log
+		build: linear
+		merge: linear
+		
+	Prim's algorithm using a heap:
+		Begin with initial vertex and build minheap to store distances adjacent to tree
+		For next step, just deleteMin, and to update the heap run changeKey
+		We run deleteMin v times, and changeKey on each edge in worse case, so total cost is
+			O(vlogv + elogv)
+			
+Entropy H
+	Limit to compression
+	Each letter in alphabet of message appears with probability pk. Entropy given by
+	H = sum 0^n pk*log(1/pk)
+	David Huffmann 1952 developed a way to attain this bound
+		Algorithm is used to assign a prefix-free code to each char(byte) in the text
+		according to its frequency
+		A prefix-free code is one where no codeword is a prefix of another codeword
+		A codeword is
+			the concatenated label of
+				the path from the root to the item in
+				a binary heap where
+					each parent has two children edges labeled 0,1
+		We want to minimize thet overall length of the encoding
+		Cost of tree = min sum f(xk)d(xk)
+			f(x) is frequency of x
+			d(x) is depth of x in binary heap
+		Building Huffman tree
+			Given table of frequencies of English letters, draw Huffman tree.
+			characters with lowest frequencies at roots
+			Select two trees of smallest weights and merge them until we get a binary heap
+			Provides optimal prefix-free encoding.
+			Proof:
+				induction on size n of alphabet.
+				Clearly holds for n=2
+				Suppose optimal for alphabet of size n-1.
+				Choose two least frequent characters c1, c2
+				Consider a new alphabet A*=A-{c1,c2}U{c*}
+					where c* is a parent node of c1 and c2.
+				Then use inductive hypothesis on A*
+				two trees: T over alphabet A, T* over alphabet A*
+				T* optimal by inductive hypothesis.
+				Now Prove: T optimal
+					Suppose not. Then there is T1 such that
+						cost(T1)<cost(T)
+					we can get T from T* by removing one character and adding two others
+					cost(T)=cost(T*)-f(c*)d(c*)+f(c1)d(c1)+f(c2)d(c2)
+						f(c*)=f(c1)+f(c2)
+						d(c*)=d(c1)-1=d(c2)-1
+					Substituting,
+						cost(T)=cost(T*)+f(c1)+f(c2)
+					Or remove c1 and c2 (sibs) from T1
+					cost(T1)=cost(T1*)+f(c1)+f(c2)
+					Since cost(T1)<cost(T), then cost(T1*)<cost(T*). contradiction
+					For any x and y s.t. f(x) and f(y) minimal, then
+						there is an optimal prefix code st x and y are siblings
+					"cost of tree" = sum f(xk)d(xk)
+					
+			example: abcbcdbc
+				Frequency table:
+				a 1
+				b 3
+				c 3
+				d 1
+				
+				Huffman tree: / labeled 0, \ labeled 1
+						 8
+						/ \
+					  5	   \
+					/  \	\
+				  2		\	c=3
+				/   \	b=3
+			   a=1  d=1
+			   
+			   abcbcdbcc=000011011001011
+			   How to decompress:
+					get Huffman tree
+					for each bit
+						travel /=left, \=right
+						if you reach a leaf
+							record the letter
+							back to root
+							
+		
+		
+2/1/2017
+Dijkstra's Algorithm
+	
+	All vertices will be divided into two groups:
+		Vertices whose shortest path from source is known
+		Vertices whose shortest path from source is unknown
+	Move vertices one at a time from unknown to known based on shortest distance TO SOURCE
+	
+	We use a priority queue for "unknown" set, a minheap.
+	Set key=0 for source s, key=inf for others.
+	Move s to known
+	DecreaseKey for all vertices adjacent to s
+	While there are unknown vertices
+		deleteMin on priority queue, where key is distance to s. vertex c.
+		Add deleted (v,key) to "known"...or like, edges...
+		decreaseKey for all vertices adjacent to vertex:
+			for each w in adj(v),
+				d(w) = min( d(w), d(v)+length(v,w) )
+				where length(v,w) is weight of edge (v,w)
+	We are left with a spanning tree.
+	
+	runtime:
+	Making heap: O(v)
+	Loop v times:
+		deleteMin O(logv)
+		decreaseKey O(e) TOTAL times, O(logv) each time
+		
+	total: O(vlogv + elogv)
+	
+	If we use an unsorted array:
+		Making array: O(1)
+		Loop v times:
+			findmin O(v)
+			decreaseKey O(e) total times, O(1) each time
+	total: O(v^2 + e)
+		
+	v^2 + e vs. (v+e)logv
+	Use arrays for graphs with few vertices and/or dense graph
+	
+	Proof of correctness:
+		Induction on number of vertices. Base case is trivial.
+		Assume true for |V|=k.
+		Notation:
+			d(x) is the shortest path from s to x
+			pi(x) path of length min(d(v)+length(v,x)), where the min is taken over all nodes adjacent to x
+		Let v be the next node added to S, the "known" set, by Dijkstra.
+		Let (u,v) be the chosen edge then.
+		The shortest s-u path d(u)+length(u,v) is an s-v path of length pi(v)
+		Consider any other s-v path P
+		Let (x,y) be the first edge in P that leaves S
+		The length of s-x-y-v, a path including those nodes, is longer.
+			len(P)>=len(s,x) + len(x,y)
+			       =d(x) + len(x,y) by inductive hypothesis, with V=S.
+				  >=pi(y) by definition of pi
+				  >=pi(v) since algorithm chose v instead of y.
+		
+	Dijkstra doesn't work on graphs with negative weights.
+	
+Amortized Analysis
+	Worst case might not occur in each operation.
+	For example, insert in array. Some linear, some constant.
+	The amortized cost per operation for a sequence of n operations is the total cost divided by n
+	
+	Three methods for it:
+		Aggregate method (brute force computation of total cost / n)
+		Accounting method (banker's method, cost of single operation)
+		Potential method (physicist's method; prob not used in this class)
+	
+	Aggregate:
+		Example: unbounded array
+			two operations: insert/delete from end.
+			implementation: array and size, where we double/halve array size as needed.
+			Total work is (2^n+1)+(2^{n+1}-1)=3*2^n
+			Average: lim_n 3*2^n / (2^n+1) = 3.
+		
+	Accounting:
+		Upper bound on overall runtime of sequence of operations
+		Payment for each operation
+		Same example:
+			1 token to insert element
+			1 token to move it when array is doubled.
+			therefore we assign at least 2 tokens to each insert
+				1st insert [1] costs 1.
+				2nd insert, we double the array, pay for insert and copy.
+				3rd, pay for one insert and 2 to copy, out of $!
+			
+			So instead assign 3 tokens to each insert
+				1st insert: pay for 1
+				2nd insert: pay for 1 insert and 1 copy
+				3rd insert: pay for 1 insert and 2 copy
+				4th insert: pay for 1 insert
+				5th insert: 3rd guy has extra token on it so pay for insert...
+	
+		Another example:
+			Given n binary numbers of logn bits each, suppose the cost of incrementing a binary number is the nubmer of bits flipped
+			What is the amortized cost per +1 to the number?
+			Start with 0.
+			First flip: 1 coin. 001
+			2nd flip: 2 coins. 010
+			3rd flip: 1 coin. 011
+			4th flip: 3 coins. 100
+			5th flip: 1 coin. 101
+					  2		  110
+					  1 	  111
+			cost per increment is clearly O(logn).
+			Aggregate method:
+				every 2^n flips costs n coins.
+				n of them cost 1
+				n/2 cost additional 1
+				n/4 cost additional 1
+				...
+				sum_0^lgn n/2^k = 2n
+				thus per increment is constant, O(2).
+			Banker's:
+				Each increment has a flip in lowest position.
+				Decide: 2 for each op. 1 coin in bank for each 0-1 flip. 1-0 paid by bank.
+				001: costs 1, 1 in the bank.
+				010: costs 2, 1 total in bank.
+				011: costs 1, 2 total in bank 
+				100: costs 3, 1 total in bank.
+				101: costs 1, 2 total in bank.
+				110: costs 2, 2 total in bank.
+				111: costs 1, 3 total in bank...
+			If cost is 2^k to flip k^th bit, then by aggregate method:
+				001: 1
+				010: 1+2
+				011: 1
+				100: 1+2+4
+				...
+				Every flip costs 1, every 2nd costs 2, every 4th costs 4...
+				n*1 + n/2 * 2 + n/4 * 4 + ... n/lgn * lgn = O(nlogn)
+				amortized: logn per increment
+				
+Binomial Tree
+	A binomial tree of rank k is defined recursively as:
+		B0 a single node
+		Bk is two joined Bk-1 trees, one shifted "above" the other
+		Bk has 2^k nodes; level j has n choose j nodes.
+	A binomial heap is a linked list of
+		at most ceil(logn) binomial trees
+		in increasing order of size,
+		where each individual binomial tree has the heap property
+	In a binomial heap there is at most one binomial tree of a given rank
+	
+	findMin = O(logn) (look at roots along linked list at top)
+	storeMin = O(1) just use pointer.
+	How to merge two binomial heaps?
+		just merge linked lists gives us trees of the same rank, so illegal.
+		Therefore we need to join trees of the same rank
+		For trees of same rank, just compare roots and choose min to be new root. O(1)
+		Worst case we do logn joins
+		Merge B0B1B2B4 with B1B4 to get B0B3B5 (binary addition)
+		Worst case: B0 merged with B0B1B2...Blgn
+			B0B0 = B1
+			B1B1 = B2...
+			each takes O(1), in total O(logn)
+	How to deleteMin?
+		Delete root and put children of sub-binary tree containing minimum at top linked list
+		Deleting root of Bk gives B0,B1,B2,...Bk-1.
+		Merge binomial trees of the same rank.
+		Reassign minimum pointer.
+		Worst case complexity is O(logn)
+	Insert?
+		Make B0, put into linked list,
+		Merge if required.
+		Worst case complexity is O(logn)
+		
+	Cost of inserting n elements into a binary heap one by one is O(nlogn)
+	Heapify takes Theta(n) if we know n in advance
+	Cost of inserting n elements into a binomial heap is Theta(n) even if n is not known in advance
+	
+Fibonacci Heaps (Freedman and Tarjan 87)
+	Idea: relaxed binomial heaps
+	Goal: decreaseKey in O(1)
+	We want to incorporate decreaseKey into binomial heap
+	
+	To decrease key of node, change its key value.
+	Idea:
+		If the new key is less than parent, swap with parent, until possibly get to tip.
+		O(logn)
+	We want O(1) though.
+	Better idea: change key, disconnect it and its entire subtree, and attach to root list.
+	No merge!
+	Might have several trees of same rank, but the heap will be fixed when deleteMin is called.
+	Problem: we no longer get nice bound on runtime of deleteMin.
+	Fibonacci heap algorithm: outside scope of this class.
+	insert: O(1)
+	
+Heap runtimes (theta)
+				binary		binomial		Fibonacci
+	findMin		1			1				1
+	deleteMin	logn		logn			logn (amortized)
+	insert		logn		1 (amortized)	1
+	decreaseKey	logn		logn			1 (amortized)
+	merge		n			logn			1 (amortized)
+
+	runtime of Dijkstra with Fibonacci: O(vlogv+e)
+	
+
+Discussion 2/3/17
+1.
+deleteMin on A and B O(logn)
+compare them O(1)
+if equal, stop O(1)
+else discard smaller one
+while A and B are nonempty
+	deleteMin from same heap as prev. discarded element O(logn)
+	compare O(1)
+	if equal, stop O(1)
+
+O(nlogn)
+
+2. Cut root off and split into two binomial heaps. Compare root with x. Repeat for each new heap. Worst case 2k comparisons.
+3. enqueue: pop/push all from first stack to second, push element to first
+dequeue: pop/push all from second to first, pop from first.
+worst case enqueue: O(n), dequeue: O(n)
+amortized: Each enqueue, 2 tokens, costs 1? Each enqueue costs k+1, where k is number on stack
+	insert: costs 1, 1 in bank. 1/0
+	insert: costs 2, 1 in bank. 1/1
+	insert: costs 2, 1 in bank. 1/2
+	insert: costs 2, 1 in bank. 1/3...
+	O(2)
+	
+	dequeue: same
+	
+	WRONG: correct answer
+	enqueue: push to stack 1; O(1)
+	dequeue: if stack 2 is empty, pop/push all from 1 to 2, then pop 2. O(n)
+	
+	amortized: enqueue O(1)
+			   dequeue: first one might be O(n) but then all subsequent will be O(1), so O(1) amortized.
+					accounting: 3 tokens for enqueue (1 to push, 2 to pop/push)
+					
+	
+4. a) True, since squaring all distances preserves order. If another spanning tree were minimal, its sqrt would be.
+WRONG: negative weights
+b) It can, because it increases the length of each path 
+
+5. For each top position we need to know a minimal path to it from the first layer. Thus we need MST
+Prim's algorithm using a heap will give same runtime as Dijkstra.
+
+6. Use DFS to find all legal paths to the end O(v+e). Then use Prim's on it. O(vlogv + elogv)
+
+
+
+
+
+2/10/2017
+Divide and Conquer
+	1. Divide problem into n subproblems
+	2. Conquer: solve subproblems recursively, or if trivial, solve subproblem directly
+	3. Combine the solutions to the subproblems.
+
+Mergesort(A,p,r):
+	if p<r:
+		q = floor((p+r)/2)
+		Mergesort(A,p,q)
+		Mergesort(A,q+1,r)
+		Merge(A,p,q,r)
+	endif
+		
+	Analysis of mergesort:
+		Divide: O(1)
+		Conquer: Overall takes, say, T(n), so
+			2 sub-mergesorts take 2T(n/2)
+			Merge: O(n) on array of size n
+		
+		T(n) = O(1) 					if n=1,2
+			 = 2*T(n/2) + O(1) + O(n) 	else
+				aT(n/b)	  D(n)   C(n)
+  a=#number of subprobs   divide combine
+n/b= size of subproblem
+			
+		Total cost of combining is C(n) at each level
+		Constant at bottom
+		logn levels
+	
+Master method:
+	T(n) = aT(n/b) + f(n)
+		where a,b>=1 constant
+		f(n) asymptotically positive
+	
+	1. if f(n) = O(n^log_b(a) - eps) for some eps>0 then
+		T(n) = Theta(n^(log_b(a)))
+	2. if f(n) = Theta(n^log_b(a))
+		T(n) = Theta(n^(log_b(a)) * logn)
+	3. if f(n) = Omega(n^(log_b(a)+eps)) for some eps>0
+		and if a*f(n/b) < c*f(n) for some constant c<1 and n>>0 then
+		T(n) = Theta(f(n))
+		
+	1. nlog_b(a) grows faster than f(n) by n^eps, i.e. polynomial.
+	2. special case: same rate.
+	3. f(n) grows faster than nlog_b(a) by n^eps, i.e. polynomial
+	
+	Special case: if f(n) = Theta(n^log_b(a) log^k(n)) with k>=0 then
+		T(n) = Theta(n^(log_b(a)) * log^(k+1)(n)))
+		
+	Mergesort:
+		a=2
+		b=2
+		f(n)=n
+		
+		n^lg_2(2) = n vs. n
+		case 2: Theta(nlogn)
+		
+New example: find buy/sell points, buy before sell, maximize s-b
+	Divide and conquer: halve support, find min and max on both sides, merge
+		a = 2
+		b = 2
+		D(n) = O(1)
+		C(n) = ?
+			Case 1: find global min M = min(M1,M2); X = max(X1,X2)
+			Case 2: buy and sell both in second half, same as above
+			Case 3: buy in first half at M1, sell at X2
+			
+			thus C(n) is O(1).
+		thus f(n) = O(1), so n^(log_b(a)) = n grows faster, so
+		total cost T(n)=Theta(n)
+		
+New example: matrix multiplication
+	AB = C
+	Split all matrices into 4 blocks
+	C11 = A11*B11 + A12 * B21
+	C12 = A11*B12 + A12 * B22 ...
+	
+	a = 8
+	b = 2
+	D(n) = O(1)
+	C(n) = O(n^2) matrix addition
+	f(n) = O(n^2)
+	
+	n^log_b(a) = n^3 vs. f(n); case 1
+	Theta(n^3). boob.
+	
+	Strassen improved this to a = 7, giving a n^log_7(2) = n^2.8
+
+New example: Find min and max in an array
+	"brute force" is O(n)
+	divide and conquer?
+	a=2
+	b=2
+	D(n)=O(1)
+	C(n)=O(1)
+	f(n)=O(1)
+	
+Closest pair of points on a plane
+	Brute force check every pair O(n^2)
+	divide and conquer:
+		split plane in two: a=2, solve each
+		combine:
+		Case 1: both points on same subdivision
+			O(n^2). Find d1 and d2, the lengths of solutions on L and R
+		Case 2: one on left, one on right
+			search for points within d=min(d1,d2) of boundary
+		around the boundary, draw a band d to L and R of boundary
+			so width 2d.
+		in any grid d/2 x d/2, there can only be 1 point in each square.
+			diagonal d*sqrt(2)/4
+			in band, draw grid.
+			each point on left, we need only check squares near & right of it for others.
+		
+		Closestpair(p): O(nlogn)
+			Construct Px, list of points sorted by xcoordinate
+			Construct Py, list of points sorted by ycoordinate
+			(p0,p1)=closestpairrec(Px,Py)
+		closestpairrec(Px,Py):
+			if |Px|<=3 or |Py|<=3:
+				solve directly
+			else:
+		O(1)	Construct Qx, left half of Px
+		O(n)	Construct Qy, list of points in Qx, (already) sorted by ycoordinate
+		O(1)	Construct Rx, right half of Px
+		O(n)	Construct Ry, list of points in Rx (already) sorted by ycoordinate
+		
+				(q0,q1)=closestpairrec(Qx,Qy)
+				(r0,r1)=closestpairrec(Rx,Ry)
+				
+		O(1)	d=min(d(q0,q1) , d(r0,r1))
+		O(n)	S = set of points in P within distance d from L, boundary
+		O(n)	Construct Sy, set of points in S sorted by ycoordinate
+		O(n)	For each s in Sy, compute distance from s to each of next 11 points in Sy
+		O(1)	Let (s,s') be pair with min distance.
+		O(1)	if d(s,s')<d:
+					return (s,s')
+				elseif d(q0,q1)<d(r0,r1):
+					return (q0,q1)
+				else:
+					return (r0,r1)
+				endif
+				
+		f(n) = D(n) + C(n) = O(n) + O(n) = O(n)
+		n^(log_b(a)) = n
+		Case 2 of master method: Theta(nlogn)
+		
+	Voronoi Diagram is another way
+	
+New example: find kth smallest elt of array
+	Related: quicksort
+		choose pivot x, put all elements below x to the left and above to the right.
+		randomly chosen pivot
+	suppose n/(1+alpha) is size of subproblem.
+	b = 1+alpha
+	a = 1 (finding kth smallest)
+	D(n) = O(n)
+	C(n) = O(1)
+	f(n) = O(n)
+	T(n)=Theta(n)
+	
+	
+	
+	
+Discussion 5
+1. Use BFS? First level: no problems. Second level: problems. Run BFS again on that level and so on.
+Will run once for each vertex and edge.
+OH!!! Replace each integer weight path with that many unweighted edges
+Run BFS
+Complexity of BFS here: V-E + 2*total weight <= V-E + 2EW
+
+
+MASTER EXPL
+number of leaves in recursion tree = a^(log_b(n)) = n^(log_b(a))
+
+
+2. a) a=3, b=3, f(n)=O(1), T(n)=Theta(n)
+b) a=4, b=2, f(n)=n^3, T(n)=Theta(n^3)
+c) a=4, b=2, f(n)=n^2, T(n)=Theta(n^2logn)
+d) a=4, b=2, f(n)=n, T(n)=Theta(n^2)
+
+3. Depends how they're merged. Say they're concatentated.
+The median will be n^th largest + (n+1)^th largest / 2.
+Look at middle+1 element p of either array. All the elements to its left are less, n/2 of them.
+Finding the greatest element q of the other array that is less than p takes logn time. Say k elements to the left of q.
+If k > n/2,
+run on left halves, remembering how many elements were eliminated on left. (n/2 + (n-k))
+If k< n/2-1,
+run on right halves, remembering how many elements eliminated on left and right (n/2 + k)
+if k==n/2-1 or n/2
+remember q and keep searching for the other one.
+
+This will take O((logn)^2) time?
+
+CLOSE BUT WRONG:
+	Look at two medians.
+	Remove left half of array containing smaller one, right half of array containing larger one.
+	Recurse.
+
+
+4. Find missing square O(1)
+Make 2x2 square which fits into 2x2 grid with single tromino 
+Make 4x4 square which fits into 4x4 grid with 4 trominos in shape of L
+...
+logn Ls drawn...
+
+ALTERNATE:
+	Put tromino in center to make 4 squares with 1 sq. missing, recurse.
+	a=4
+	b=2
+	C(n)=O(1)
+	D(n)=O(1)
+	T(n)=Theta(n^2)
+
+
+5. (a^{(n-1)/2}*10^{(n-1)/2} + a_0 ) ( b^{(n-1)/2} * 10^{(n-1)/2} + b_0)
+a = 4
+b = 2
+D(n) = O(1)
+C(n) = O(n)
+T(n) = Theta(n^2)
+
+In 1961 someone reduced a to 3 (like Strassen)
+x0y1 + x1y0 = (x0+x1)(y0+y1)-x0y0-x1y1.
+
+6. Variant of quicksort.
+Choose pivot and get it in position. If position is correct, then missing number is greater. If not, it's less.
+Recurse on greater stuff.
+WRONG: could just add all them up and find difference from expected.
+Instead (D&C) write all as binary and find first significant bit.
+Should be half 0 half 1, determine which is less, recurse on those.
+a=1
+b=2
+D(n)=O(n)
+C(n)=O(1)
+T(n)=Theta(n)
+
+
+
+REVIEW 2/15/2017
+1. Put an initial node, connect to lowest level, and then run BFS from the initial node.
+Choose a path ending at lowest-level terminal node.
+2. TRUE: each BFS tree rooted at x gives the shortest paths from x.
+Suppose t-v is any path in t. BFS tree rooted at v gives shortest path v-t,
+so the length of t-v in DFS tree rooted at t has to be at least this length.
+True of all paths.
+WRONG: not true for all...uh...this is true for a fixed node t but not for arbitrary t
+
+3. n^2 < n^2logn < 2^[(logn)^2] < 2^n < 2^(2^n)
+4. TRUE; TRUE
+
+next TA
+2. Interval scheduling. Order by end time f_i?
+Earliest finish times first.
+Induction: This is a recursive algorithm. Suppose the optimal solution chooses
+a job J to go next which does not have the earliest finish time among jobs.
+Say earliest finish time job is J*.
+When J finishes, we will have less time to complete as many jobs as if we had
+chosen J*. Moreover, there are more eligible jobs to choose from if we choose
+J*, so that if we choose J* we will complete at least as many jobs as if we chose J.
+
+3. Order by li and send longest first.
+At every step we print magazine with longest li.
+Suppose this is wrong.
+Let's say we're about to send m with longest send time l,
+but optimal solution sends m* with send time l*.
+Then time to finish is at least
+	m* + m + l
+if paper m ships before l* arrives.
+If we instead sent m with longest send time l, then the time
+to finish is at most (if m*>l)
+	m + m* + l*
+which is less since l>l*.
+
+next TA
+1. a) Maintain onDeck, list of keys of nodes adjacent to nodes in chosen.
+
+chosen = [root].
+onDeck = binomial heap of root.lchild, root.rchild.
+while len(chosen)<k
+	deleteMin of onDeck and add it to chosen O(logk) + O(1)
+	Add children of the deleted node to onDeck O(logk)
+endwhile
+
+Take root. Take smaller child. Take smallest of 3 adjacent. etc.
+Maintain a Fibonacci minheap M containing keys of nodes adjacent to already chosen nodes.
+Add root to chosen takes O(1). Add adjacent stuff to M takes constant time (amortized).
+Deletemin from M takes logn, then add adjacent stuff to M takes constant time (amort).
+Doing this k times takes nlogn.
+
+2. Number of shortest paths from s to t:
+If edge weights are distinct, there is only 1.
+If not, may be more.
+Dijkstra's. The s-t path there is shortest path.
+Then reverse edges and do Dijkstra's from t-s.
+Soon as a node a is added, add to the length of the path s-a in the first
+to get shortest s-a-t path. Compare to s-t path from first.
+
+BETTER: # shortest paths to v is # shortest paths to predecessors.
+
+3. Order all spanning trees of G by their total weight.
+Subtracting k from a single edge of G preserves this order since it reduces each tree's total weight by k.
+This gives T'. Therefore T' is the MST of G
+
+4. lg n times it costs >1.
+1 + 2 + 1 + 4 + 1 + 1 + 1+ 8...
+= n + sum_k=1^lgn (2^(k)-1)
+= n - lgn + (2^(lgn + 1) - 1)
+= n - lgn + 2n - 1
+= 3n - lgn - 1
+= O(3) amortized
+
+5. unclear question.
+
+6.
+shortest u-v path in G' over node set J is sum_J w_i^2.
+Suppose sum_J' w_i < sum_J w_i. Then sum_J' w_i^2 < sum_J w_i^2.
+
+7. REGULARITY CONDITION FOR f(n) = Omega(nlog_b(a)+eps)
+	af(n/b)<=cf(n) for some c>1, n>>0
+
+	Theta(n^lg(3))
+	Theta(nlogn)
+	Theta(nlog^3n)
+	Theta(n^0.51)
+	no since a<1 but
+		T(n) = 2^-1*T(n/2) + 1/n
+			 = 2^-2*T(n/4) + 1/2n + 1/n
+			 = 2^-lgnT(1) + 1/n sum_0^lgn(2^-k)
+			 = 1/n + 1/n * 1/n
+			 = 1/n
+	no since f(n)<0 but
+		= 96^lgn - n^2 sum_0^lgn 96^k
+		= n^lg96 - n^2 * n^lg96
+		<0
+	
+	Divide,conquer,combine
+	
+	Maximal sub-array (1D)
+		i<=j such that sum_k=i^j A[k] is maximal
+		While changes made
+			Add two consecutive elements of greatest sum if their sum is greater than their parts.
+		Data structure:
+			doubly linked list for array,
+			binomial maxheap for consecutive sums?
+			Create: O(n)
+			O(n) times:
+				deleteMax O(logn)
+				then combine them in linked list O(1)
+				and then update the two adjacent keys in consecutive sums, O(logn)
+			O(n+(log)n^2)
+			
+			
+			
+			
+2/22/2017
+
+Dynamic programming
+	Optimal substructure: solution of whole problem comes from optimal solutions to subproblems
+	Overlapping subproblems: i.e. chess game tree, which memorizes intermediate results in case already-calculated game position is reached
+	
+	Filling out table (non-recursively) in a bottom-up manner in two steps:
+		Express solution in terms of solutions to smaller subproblems
+		Compute solutions to subproblems and store in table
+		
+Example: money changing problem.
+	Compute minimum number of coins needed to make change for given amount m.
+		Assume denominations d_k sorted in descending order 1=d_1<=d_2<=...<=d_n
+		
+	Greedy approach doesn't work:
+		Example, 40 cents with American denominations works.
+				 40 cents with additional 20c coin, greedy doesn't work.
+				 
+	Define subproblems:
+		Same problem, smaller input.
+		Let c[k,x] be the LEAST number of coins to represent some amt x between 0 and m using first k denominations (1<=k<=n).
+		n x m table.
+		
+		Goal: find recurrence relation for c[k,x].
+			Two possible choices: amount x includes largest coin d_k, or not.
+				In first case, c[k,x]=1+c[k,x-d_k]
+				In second case, c[k,x]=c[k-1,x]
+		
+		c[k,x]=min(1+c[k,x-d_k] , c[k-1,x])
+		c[k,x]=c[k-1,x] if x<d_k
+		c[k,0]=0
+		c[1,x]=x (pennies only)
+		
+	Solution is c[n,m].
+		
+	Runtime complexity: O(nm)
+		We do two table lookups for each entry, which are constant. Thus O(nm)
+		To find those coins from the table,
+			Use of vertical lookup = no use of largest coin
+			Use of horizontal = use of largest coin, so + 1 to number of coins
+			Linear time
+			
+Example: 0-1 knapsack problem
+	Given set of unique items, each with weight and value, determine the subset of itesm
+		such that the total weight is <=W and value large as possible.
+	Assume all items unbreakable (0-1)
+	
+	n items (input size)
+	weights w_1,...,w_n
+	values  v_1,...,v_n
+	W our knapsack capacity
+	
+	Given \sum_{k=1}^m w_k <=W, maximize \sum_{k=1}^m v_k.
+	
+	Runtime of brute force: exponential
+	
+	Greedy doesn't work:
+		W=10
+		item	value	weight
+		1		30		6
+		2		16		4
+		3		9		1
+		4		9		2
+		
+		30+16 vs 30+9+9
+		
+	Add variable x_k for each item. x_k=1 selected, =0 not.
+	
+	Maximize \sum_1^n v_kx_k subj. \sum_1^n w_kx_k<=W.
+	
+	Decision tree: [1,...,n], W. Either include item n (whatever) or not.
+		If include, x_n=1, subproblem is [1,...,n-1],W-w_n. If not, [1,...,n-1],W.
+		Optimal substructure: each subproblem is recursively solved optimally.
+		With simple decision tree, no overlap.
+		
+		FORCE subproblems to overlap as much as possible. If none, exponential runtime.
+		
+	Let OPT[k,w] be max value from capacity w 0<=w<=W and first k items 1<=k<=n.
+	Recurrence relation for OPT[k,w]:
+		2 choices: include item k or not.
+			include: x_k=1; OPT[k,w]=v_k + OPT[k-1,w-w_k] (all items unique, if not k-1 <-- k)
+			not: 	 x_k=0; OPT[k,w]=OPT[k-1,w]
+		
+		OPT[k,w]=max(v_k+OPT[k-1,w-w_k],OPT[k-1,w]).
+		OPT[k,w]=OPT[k-1,w] if w_k>w.
+		OPT[k,0]=0
+		OPT[0,w]=0
+		
+	Table is (n+1) x (W+1)
+		2 table lookups ea, but want to ensure those values are in our table.
+		One lookup: move up. The other: Diagonal.
+		
+	Runtime: O(nW). Not polynomial since it depends crucially on W. In paricular,
+		increasing capacity by one bit doubles the table size.
+		Note input sizes usually measured in bits...
+		
+	Implementation:
+		
+		int knapsack(int cap, int w[], int v[], int n){
+			int Opt[n+1][cap+1];
+			for(k=0;k<=n;k++){
+				for(w=0;w<=n;w++){
+					if (k==0||w==0) Opt[k][w]=0;
+					elif (w[k-1]>cap) Opt[k][w]=Opt[k-1][w];
+					else
+						Opt[k][w]=max(v[k-1]+Opt[k-1][cap-w[k-1]], Opt[k-1][w]);
+				}
+			}
+			return Opt[n][cap]
+		}
+		
+Summary:
+	Optimal substructure: optimal solution to problem consists of optimal solutions to subproblems
+	Overlapping subproblems: few subproblems in total, many recurring instances of each
+	Solve bottom-up, building a table of solved subproblems used to solve larger ones.
+	
+	
+	
+Memo-ization:
+	Implement algorithm recursively in top-down manner.
+	If we encounter subproblem we've seen, look up answer.
+	If not, compute solution and add to list.
+	
+Example: Fibonacci
+	int table[50]; //initialize to 0
+	table[0]=table[1]=1;
+	
+	int fib(int n){
+		if(table!=0) return table[n];
+		else
+		table[n]=fib(n-1)+fib(n-2);
+		
+		return table[n];
+	}
+	
+	runtime complexity: O(n)
+
+Example: Chain matrix multiplication
+	Given a sequence of matrices, determine the order of multiplication minimizing the number of operations.
+	
+	mxn matrix times nxp matrix takes mnp multiplications. Forget strassen for now.
+	
+	Number of full binary trees with n leaves is C_{n-1} (Catalan numbers)
+	
+	Given: M_1xM_2x...M_n
+	
+	Subproblems: Optimal solutions for M_i,...,M_j for 1<=i<j<=n.
+	
+	Cost of i,j subproblem:
+		Opt[i,j]=Min cost of M_i*M_(i+1)*...*M_j
+		Opt[i,i]=0
+		
+		How many unique subproblems? n(n-1)/2.
+		How to compute subproblems: Split each product into two pieces for each i<=k<j.
+			Compute (i,k) and (k+1,j) subproblems and combine them.
+			Opt[i,j]=Opt[i,k]+Opt[k+1,j]+combine_step for the proper k.
+			
+			(M_i*...*M_k)*(M_k+1*...*M_j)
+			 r_i-1 x r_k	r_k x 	r_j
+			 
+			Opt[i,j] = min_{k for i<=k<j} (Opt[i,k]+Opt[k+1,j]+r_(i-1)*r_k*r_j)
+			Opt[i,i] = 0					for i=1,2,...,n
+			Opt[i,i+1]=r_(i-1)*r_i*r_(i+1)	for i=1,2,...,n-1
+			
+			1<=i<j<=n.
+			
+		Solution: Opt[1,n]. Must do "bottom up", meaning simpler problems first.
+			Fill out table diagonally, increasing superdiagonal (upper triangular table)
+			The Opt[i,k] lookup requires that all elements to left should be computed already.
+				Opt[k+1,j] requires that all elements below should be computed.
+				
+Discussion 2/24/2017
+
+1. Problem: Minimize cost over next n days.
+
+	Observation: It does not make sense to buy groceries if we already have them.
+	Therefore one's decision is only based on the schedule for the next 7 days.
+	Therefore, a greedy approach will suffice.
+	We should buy groceries today if:
+		we do not already have groceries,
+		today is not a free dinner day, and
+		there are 4 or more days including today in the coming week with no free dinner.
+		
+	SOLUTION: minimize cost over n days
+		If day j has free dinner, opt[k]=opt[k-1]
+		if day j eat at cafeteria, opt[k]=opt[k-1]+3
+		if day j cook, opt[k]=opt[k-7]+10
+		
+		
+
+2. a) 9 choose 5 = 9*8*7*6/4*3*2 = 3*7*6 = 126.
+b) Problem: minimize distance. Each step: choose right or down.
+Keep track of optimal distance from [i,j] to [5,4].
+Boundary: D[5,4]=0.
+		  D[5,j]=1+D[5,j-1] ----> D[5,j+1]-1 = D[5,j]
+		  D[i,4]=1+D[i-1,4] ----> D[i+1,4]-1 = D[i,4]
+Recurrence: D[i,j]=1+min(D[i+1,j],D[i,j+1]).
+c) Include boundary condition D[2,2]=+infty.
+
+3. CheckPal(S):
+	m=length(S);
+	Check if S is a palindrome.
+		If yes, return m.
+		If not, for i in 1:m 
+			CheckPal(S[[-i])
+
+	Thus we need to know for each substring whether it is a palindrome.
+	
+	B = int[n,n] where first index is starting char and second is ending char. (upper triangular table)
+		B[i,j] stores length of maximal subpalindrome of s_i...s_j
+	initialize B[i,i]=0, B[i,i+1]=1 for all i.
+	Recurrence:
+		B[i,j]=max(B[i,j-1],B[i+1,j]) if s_i,...,s_j is not a palindrome.
+		B[i,j]=j-i+1 if s_i,...,s_j is a palindrome.
+		
+		Need: B[1,n].
+		
+		Each recurrence looks at left neighbor and down-left neighbor.
+	
+	
+	
+	
+	
+3/3/2017
+
+More dynamic programming
+
+Longest common subsequence
+	String S of length n, string T of length m
+	Goal: Produce longest common subsequence
+	
+	opt[i,j] length of LCS with s_1...s_i and t_1...t_j
+	
+	Case 1: S[i]=T[j]
+		LCS[i,j] = 1 + LCS[i-1,j-1]
+	Case 2: S[i]!=T[j]
+		LCS[i,j] = max(LCS[i-1,j],LCS[i,j-1])
+		
+	Base: LCS[i,0]=LCS[0,j]=0
+	Complexity: O(mn)
+	
+	How to find sequence? Start with opt[n,m] and look at Up and Left. If same, push character.
+	If not, move to max and repeat.
+	
+Optimal static binary search tree
+	Given sequence k_i of n sorted keys, with search probability p_i for each key k_i
+	For key k_i, search cost = depth(k_i), where root depth is 1.
+	Want to build binary search tree from keys with minimum expected cost:
+		cost = sum pi*depth(ki)
+	
+	Example: 0.25,0.2,0.05,0.2,0.3
+	
+	We need answer for k_1,...,k_n, must be able to find optimal solution for k_i,...,k_j
+	
+	To define a binary search tree, must first define root.
+	Consider subproblem i,j. One of k_i,...,k_j must be root. Let it be k_r (not nec. optimal)
+		Try each key to be root, and get minimum cost.
+	
+	opt[i,j] is optimal cost for k_i,...,k_j.
+		opt[i,j] = min_{i<=r<=j} ( opt[i,r-1] + opt[r+1,j]) + extra_term
+				 = cost(T)
+				 = p_r + sum_{s=i}^{r-1} p_s*depth_T(k_s) + sum_{s=r+1}^j p_s*depth_T(k_s)
+				 = p_r + sum_{s=i}^{r-1} p_s*(1+depth_L(k_s)) + sum_{s=r+1}^j p_s*(1+depth_R(k_s))
+				 = p_i + ... + p_j + cost(T_L) + cost(T_R).
+				 thus extra_term = p_i + ... + p_j
+		opt[i,i] = p_i
+		opt[i,i-1]=0
+		
+		
+		
+Traveling salesman
+	Salesman starts at city A, wants shortest path to visit all cities exactly once and return to A.
+	
+	Start at vertex x. Suppose we have already computed a solution that traveled to vertices S, ending at k.
+	Let opt[S,k] be minimum cost path visiting ALL cities in S starting at x, ending at k.
+	
+	Opt[S,k] = min_{j in S} (Opt[S-k,j]) + weight(j,k)
+	Opt[S,k] = c(x,k) if S = {x,k}
+	Goal: Opt[V,x].
+	problem: exponential.
+		How many subsets do we consider O(2^n)
+		Number of choices for k O(n)
+		How much work each call O(n)
+		O(n^2*2^n)
+		
+		
+Shortest path (negative weights)
+	Greedy: Dijkstra
+		Split vertices into un/discovered and move vertices one at a time based on shortest distance to root
+		
+	Dynamic:
+		Consisder path v=w_0...w_k-1,wk=u
+		Optimal substructure: w_0...w_k-1 must be optimal
+		Therefore we'll count number of edges in shortest path and solve recursively by number of edges.
+		Suppose we have optimal path from s to w that uses at most k edges, for each w.
+			How to solve for shortest path to v that uses at most k+1 edges?
+			Go to each neighbor of v and search for optimal path to it.
+			
+		Bellman-Ford algorithm
+			D[v,k] length of shortest path from s to v that uses at most k edges.
+			Case 1: path uses at most k-1 edges:
+				D[v,k] = D[v,k-1]
+			Case 2: Path uses exactly k edges
+				D[v,k] = min_{w adj v}(D[w,k-1]+weight(v,w))
+			Case 3: k=0
+				D[v,0]=0	 if v=s
+				D[v,0]=infty if v!=s
+			
+Shortest paths (all sources)
+	First idea: Bellman-Ford many times
+		D[v,k] denotes the length of the shortest path from s to v that usess at most k edges.
+		Add another dimension: D[u,v,k] denotes length of shortest path u to v using <=k edges.
+		
+	Floyd-Warshall
+		Increase SET of VERTICES we allow as INTERMEDIATE nodes in shortest path between 2 vertices
+		Vertices numbered 1,...,n
+		D[i,j,k] shortest path from i to j where intermediate vertices
+			can only be chosen from {1,...,k}
+			k=0, every path consists of at most 1 edge
+				D[i,j,0]=weight(i,j)
+			D[i,i,k]=0
+		How to compute D[i,j,k]?
+			D[i,j,k-1] path doesn't go through vertex k.
+				Optimal path for D[i,j,k] may or may not include k
+				If so, D[i,j,k]=D[i,k,k-1]+D[k,j,k-1]
+				If not, D[i,j,k]=D[i,j,k-1]
+		D[i,j,k]=min(D[i,k,k-1]+D[k,j,k-1],D[i,j,k-1])
+		D[i,j,0]=weight(i,j)
+		cubic runtime
+		
+		Negative cycle indicated by checking diagonal at outer loop
+		
+		How to extract shortest path?
+			Change run, every time D[i,j,k] is changed, P[i,j]=k. path is i-k-j.
+		
+Runtimes:
+	Floyd-Warshall O(v^3)
+	Bellman-Ford O(ev^2)
+	Dijkstra with Fib heap O(v(e+vlogv))
+	
+
+	
+	
+3/08/2017
+Network Flow
+
+A flow network is a directed graph G=(V,E)
+	- such that each edge has a nonnegative capacity e
+	- with a single source node s
+	- and a single sink node t
+		Assumptions:
+		No edges enter s or leave t
+		No isolated nodes, so O(m+n) = O(m)
+		All capacities are INTEGERS
+		
+	f(e) is flow through edge e
+		0 <= f(e) <= e
+		Conservation: sum_in(v) f(e) = sum_out(v) f(e), except s and t.
+		
+	Steady state flow is what we'll work with.
+		There's also transient and "burst" flow
+		
+	value of flow f is 
+		sum_out(s) f(e)
+		
+Max flow problem:
+	Given a flow network G, find an s-t flow with maximum value
+		An s-t flow utilizes the entire network.
+		
+	First try: highest capacity edges first. Doesn't work
+	Second try: lowest capacity edges first. Doesn't work
+	
+	Gf is the residual graph of G:
+		Same V
+		For each edge e with f(e)<c(e), include e in Gf with capacity c(e)-f(e).
+		For each edge e with f(e)>0, include edge e' (e^op) in Gf with capacity f(e)
+		
+		if f(e)=0, e is unchanged in Gf
+		if f(e)=c(e), we flip it in Gf.
+		if 0<f(e)<c(e)
+			one forward edge with capacity c(e)-f(e)
+			one backward edge with capacity f(e)
+		
+	Each additional flow, construct residual graph and stop when no more flow can leave s.
+	
+	If P is a simple path from s to t in Gf, then bottleneck(P) is the minimum residual capacity of any edge on P.
+		That gives the flow that can travel along the path P.
+
+	Strategy (greedy):
+		Find path from s to t
+		Find the bottleneck
+		Push flow through path with value = bottleneck
+		repeat
+		
+	Augment(f,c,P):
+		b = bottleneck(P)
+		for each (v,u) in P:
+			if e=(v,u) is a "forward" edge:
+				f(e) += b in G, since the additional flow suggested by P adds flow
+			else (v,u) is a backward edge:
+				f(e) -=b in G
+				
+				
+	We need to show that if f is a valid flow, after augmentation we end up with a valid flow.
+	Proof: 1. Check capacity condition: for each edge e, 0<=f'(e)<c_e
+		If e is a forward edge, bottleneck(P)<=c_e-f(e) --> f'(e) <= c_e
+		If e is a backward edge, bottleneck(P)<=f(e) --> f'(e)>=0.
+	2. Check conservation of flow
+		Assume f is a valid flow, for each node v other than s and t we have
+			sum_in(v) f(e) = sum_out(v) f(e)
+		
+		
+		
+	Ford-Fulkerson algorithm for max flow:
+	MaxFlow(G,s,t,c)
+		f(e)=0 for all e in G
+		While there is an (s,t) path in Gf: (at most C=sum c(e) times)
+			Let P be a simple s-t path in Gf	O(m)
+			f'=Augment(f,c,P)					O(n)
+			f=f'								O(m)
+			update Gf							O(m)
+											  = O(Cm)
+			
+	Proof of correctness:
+		While loop terminates:
+			Value of flow is strictly increasing.
+				v(f) = sum_out(s) f(e)
+				v(f) <= sum_out(s) c(e) = c
+				
+		f is a maxflow
+			Defn: a CUT divides nodes into two sets such that s\in A, t\in B.
+				  its CAPACITY is sum_out(A) c(e)
+				  
+			Let f be any s-t flow and (A,B) any cut. Then v(f)=f^out(A)-f^in(A)
+				for all nodes in A, f^out(v)=f^in(v)
+				sum_v\in A (f^out(v)-f^in(v) = v(f)
+					each edge which is only in A appears twice in the above sum
+					each edge which crosses A->B appears once as a positive value above.
+			
+			max flow value <= capacity of (A,B) cut
+				v(f) = f^out(A) - f^in(A)<=f^out(A) = sum_out(A) c(e)
+				
+			Ford-Fulkerson terminates when f has no s-t paths in Gf
+				Claim: if no s-t path in Gf, then there is an s-t cut
+					(A*,B*), where v(f) = c(A*,B*)
+				Proof: Create A*,B* such that A* includes all v reachable from s in Gf.
+					For this cut, any edge e A*->B*, f(e)=c(e)
+										  e' B*->A*, f(e')=0
+										  
+					Thus v(f) = f^out(A*) - f^in(A*) = sum_out(A) c(e) - 0 = v(f) = c(A*,B*)
+					
+	How to construct min cut from max flow?
+		Construct residual graph and do BFS to find all nodes reachable from s.
+				
+	How to tell when a mincut is unique?
+		Find maxflow and subsequent mincut, then reverse all edges and do again.
+		
+		
+	Scaled Ford-Fulkerson
+		Initially set f(e)=0 for all e in G
+		Set D = largest power of 2 <= than max cap out of s
+		While D>=1
+			While there is an s-t path in Gf(D) (filtered residual graph, i.e. residual capacities >=D)
+				Let P be a simple s-t path in Gf(D).
+				f'=augment(f,P)
+				f'=f
+				update Gf(D)
+			D/=2
+			
+	During the Delta-scaling phase, each augmentation increases flow by at least D.
+	Let f be the flow at the end of the D-scaling phase.
+	Claim: There is an s-t cut (A,B) in G for which c(A,B)<=v(f) + mD.
+		Let A be the set of points reachable from s in Gf(D), B the rest.		Residual capacity along any edge A->B is <D.
+		Flow							 B->A is <D.
+		
+		
+	Claim: The number of augmentations in a scaling phase is at most 2m.
+		therefore scaled Ford-Fulkerson is O(logc*m^2) (weakly polynomial)
+		
+	Another algorithm:
+		Edmonds-Karp
+			Same as scaled F-F, but ea. step augments shortest path with available capacity
+			O(nm^2) (strongly polynomial)
+			
+		Recently developed methods solve maxflow in near-linear time in m
+		
+Lecture 3/22/2017
+	BUNCH OF STUFF ON BIPARTITE MATCHING
+	
+	Maximum number of edge-disjoint paths
+		Given a directed graph G with s and t, find max number of edge-disjoint s-t paths in G
+		General plan:
+			Design a flow network G' that will have a flow value v(f)=k iff there are k edge-disjoint s-t paths in G
+			Moreover, flow f in G' should identify the set of k edge-disjoint paths in G
+			
+		Any edge incoming to s or outgoing from t will not be used, so we delete them.
+		Unit edges
+		We get a flow network with source s and sink t
+		Run maxflow
+		v(f) will be the maximum number of edge-disjoint s-t paths
+		verification:
+		1) A set of k edge-disjoint s-t paths in G gives a flow of value k in G'.
+		2) If we have a valid flow of value k in G', we can find k edge-disjoint s-t paths in G.
+			Each unit of flow must end up at t, otherwise not a valid flow (no conservation of flow)
+			Therefore since each edge can only carry 1 unit of flow, each s-t path must be edge-disjoint.
+			Just find k s-t paths recursively on sub-flow networks, deleting edges of each path as paths are found
+		If there is a loop, then some node in the loop has 2 units flow incoming, so there must be another outgoing edge from it, since the flow was assumed valid.
+		
+		What about for undirected graphs?
+			Put 2 directed edges in place of every undirected edge
+			When any (directed)	edge is traversed, delete the opposite edge.
+			
+	Maximum number of node-disjoint paths
+		Given a directed graph G with s and t nodes, find max number of node-disjoint s-t paths.
+		"Treat nodes as edges"
+		Turn each node into 2 nodes connected by an edge with unit capacity
+		
+
+	Circulation network
+		Directed graph with edge capacities. (no unique source/sink)
+		Associated with each node is a demand d_v.
+			if d_v > 0 , node v has demand of d_v for flow (sink)
+			if d_v < 0 , node v has supply of -d_v for flow (source)
+		Conditions:	
+			1) A circulation with demand {d_v} is a function f assigning nonnegative reals to each edge such that
+				0<=f(e)<=c_e
+			2) Demand condition: For each node v
+				f^in(v) - f^out(v) = d_v
+			
+		If there is a feasible circulation with demands d_v then sum d_v = 0
+		Proof: sum_v f^in(v) - f^out(v) = sum_v d_v
+			Flow along each edge contributes once positively and once negatively
+			
+		sum_{v:d_v>0} d_v = sum_{v:d_v<0} -d_v = D (total demand)
+		
+		How to find valid circulation?
+		To make G', add supersource and supersink with capacities prescribed by supply/demand
+			where each demanding node receives supply from s and each supplying node outputs to t
+		Run maxflow. If value of flow is <D, no way to satisfy demand. Can't be >D because of conservation
+		Validity of algorithm:
+			If there is a feasible circulation with demand {d_v} in G, then we can find a maxflow in G' of value D.
+				Source supplies to each needy node, so just let this be the flow.
+			If there is a maxflow of value D, then we can find a feasible circulation with demand {d_v}
+			
+
+			Circulation with demands and lower bounds
+		Conditions:
+			1) For each edge e, l_e<=f(e)<=c_e
+			2) f^in(v) - f^out(v) = d_v
+		Solution:
+			Pass #1:
+				Find some f_0 satisfying lower bounds, i.e. f_0(e) = l_e.
+				We will have flow imbalance f^in_0(v) - f^out_0(v) = sum_in(v) l_e - sum_out(v) l_e =:L_v
+				Create residual graph G' where
+					c'_e = c_e - l_e and d'_v = d_v - L_v.
+			Pass #2:
+				Do ordinary circulation to find flow f_1
+				Add f_0 to f_1.
+				
+	Survey design problem
+		Input:
+			Information about who purchased which products
+			Maximum and minimum number of questions to send to customer i
+			Maximum and minimum number of questions to ask about product j
+		We'll make a maxflow on a bipartite graph: X=customers; Y=products.
+			unit edge if X_i bought Y_j
+			Make source and sink
+			max/min questions to send customer i set bounds on edge capacities coming from s
+			max/min questions to ask about product j set bounds	on edge capacities entering t.
+			
+			
+			
+DISCUSSION 3/24/2017
+1. Undirected version of edge-disjoint paths algorithm. Create two directed edges for every undirected edge.
+The treasure room will serve as t, and the entrance s. Whenever a path P is chosen during F-F,
+delete opposite path. We will end up with k edge-disjoint s-t paths. Thus Indy can get int(k/2) treasures, since
+half these will be traversed on the way there and the other half on the way back.
+
+2. Bipartite graph: X=USC, Y=UCLA, edge x_i,y_j capacity 1 if rating(x_i)>rating(y_j). Source s only sends
+1 unit of flow into each x_i. Find maximal node-disjoint flow. It will not necessarily be = n. Randomly match up
+the leftovers.
+
+
