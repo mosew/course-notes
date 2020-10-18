@@ -1,5 +1,8 @@
 "# course-notes" 
 
+report.pptx
+	Not a final paper nor a set of course notes--a presentation of a 12-month outpatient mortality prediction for CKD Stage IV and V patients at Kaiser Permanente.
+
 CS570_notes.txt
 	Complete set of course notes for USC graduate course, taken in .txt format.
 	
